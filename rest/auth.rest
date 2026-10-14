@@ -1,0 +1,53 @@
+-- Active: 1790184526881@@127.0.0.1@5435@app_dev
+@baseUrl = http://localhost:3000
+
+### Login/registro con Google
+# El id_token debe obtenerse del SDK de Sign-In de Google en un cliente real,
+# o de https://developers.google.com/oauthplayground (no se puede generar
+# desde este cliente REST).
+#
+# Define GOOGLE_ID_TOKEN en tu .env local (no se commitea) para no pegar
+# tokens reales aquí. Es la única variable que hay que rellenar a mano: las
+# peticiones siguientes reutilizan el accessToken/refreshToken de esta misma
+# respuesta automáticamente.
+# @name googleLogin
+POST {{baseUrl}}/auth/google
+Content-Type: application/json
+
+{
+  "id_token": "{{$dotenv GOOGLE_ID_TOKEN}}"
+}
+
+### Perfil propio (usa el accessToken devuelto por /auth/google)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{googleLogin.response.body.$.accessToken}}
+
+### Perfil propio sin token (401 esperado)
+GET {{baseUrl}}/auth/me
+
+### Refrescar el access token (independiente del proveedor usado para el login)
+# Usa el refreshToken devuelto por /auth/google. Cada uso rota el refresh
+# token (el de la respuesta de arriba deja de servir tras esta petición).
+# @name refreshTokens
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{googleLogin.response.body.$.refreshToken}}"
+}
+
+### Perfil propio con el accessToken recién refrescado
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{refreshTokens.response.body.$.accessToken}}
+
+### Logout (revoca todos los refresh tokens del usuario en todos los dispositivos)
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{googleLogin.response.body.$.accessToken}}
+
+### Refrescar tras logout (401 esperado: el refresh token quedó revocado)
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{googleLogin.response.body.$.refreshToken}}"
+}

@@ -1,0 +1,8 @@
+{
+  "migrationsTable": "pgmigrations",
+  "schema": "public",
+  "dir": "migrations",
+  "ignorePattern": "^\\.",
+  "template": "es6",
+  "checkOrder": true
+}
