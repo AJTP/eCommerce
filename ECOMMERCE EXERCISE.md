@@ -70,7 +70,7 @@ Debes crear **5 tablas relacionadas**:
 - Usuario que compró
 - Monto total (snapshot del momento de compra)
 - Estado (pending, completed, cancelled)
-- Timestamps (creado, actualizado)
+- Timestamps (creado)
 
 **Consideraciones:**
 
@@ -83,7 +83,6 @@ Debes crear **5 tablas relacionadas**:
 
 - Relación order-product
 - Cantidad y precio unitario (snapshot del momento)
-- Timestamps
 
 **Consideraciones:**
 
